@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Grade</string>
+    <string name="Signin">เข้าสู่ระบบ</string>
 </resources>
