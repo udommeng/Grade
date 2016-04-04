@@ -1,5 +1,6 @@
 package apppnc.udommeng.grade;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -68,11 +70,42 @@ public class MainActivity extends AppCompatActivity {
             myAlert.myDialog(this,"มีช่องว่าง","กรุณากรอกทุกช่อง");
         } else {
             //ไม่มีชอ่งว่าง
+            searchUser();
         }
 
 
 
     }// ClickSignIN
+
+    private void searchUser() {
+        try {
+            SQLiteDatabase sqLiteDatabase = openOrCreateDatabase(MyOpenHelper.database_name,
+                    MODE_PRIVATE, null);
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from  userTable where User = " + "'" + userString + "'", null);
+            cursor.moveToFirst();
+            String[] resultStrings = new String[cursor.getColumnCount()];
+            for (int i=0 ;i<cursor.getColumnCount();i++) {
+                resultStrings[i] = cursor.getString(i);
+            }
+
+            cursor.close();
+            //check password
+            if (passwordString.equals(resultStrings[2])) {
+                Toast.makeText(this, "ยินดีต้อนรับ" + resultStrings[3], Toast.LENGTH_SHORT).show();
+            } else {
+                MyAlert myAlert = new MyAlert();
+                myAlert.myDialog(this, "Passwod False", "กรุณาตรวจสอบ password");
+            }
+
+
+            //Toast.makeText(this, "ยินดีต้อนรับ" + resultStrings[3],Toast.LENGTH_SHORT);
+        }catch(Exception e) {
+            MyAlert myAlert = new MyAlert();
+            myAlert.myDialog(this,"ไม่มี User นี้","ไม่มี" + userString + " ในฐานข้อมูล");
+        }
+
+
+    }// SearchUser
 
     private void synJSON() {
         //Connect http
